@@ -2,6 +2,8 @@
 class JiraLoader:
     def __init__(self, jira_client, project_key):
         self.jira_client = jira_client
+        if not project_key or not isinstance(project_key, str):
+            raise ValueError("Jira project key must be a non-empty string.")
         self.project_key = project_key
 
     def fetch_issues(self):
