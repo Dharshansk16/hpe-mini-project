@@ -1,5 +1,3 @@
-from github import Github
-
 class GithubLoader:
     def __init__(self,git_client, repo):
         if not repo or not isinstance(repo ,str):
@@ -30,6 +28,9 @@ class GithubLoader:
                         "metadata": {
                             "path": file_content.path,
                             "filename": file_content.name,
+                            "repository":self.repo, 
+                            "source":"github",
+
                         }
                     }
                     documents.append(doc)

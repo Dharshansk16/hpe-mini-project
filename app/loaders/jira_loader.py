@@ -1,4 +1,3 @@
-
 class JiraLoader:
     def __init__(self, jira_client, project_key):
         self.jira_client = jira_client
@@ -24,10 +23,12 @@ class JiraLoader:
                         "summary": summary,
                         "status": fields.get("status", {}).get("name"),
                         "assignee": fields.get("assignee", {}).get("displayName") if fields.get("assignee") else None,
+                        "source": "jira",
+                        "project_key": self.project_key
                     }
                 }
                 documents.append(doc)
             return documents
         except Exception as e:
             raise ValueError(f"Failed to fetch issues from Jira: {str(e)}")
-        
+
