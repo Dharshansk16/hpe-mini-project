@@ -2,6 +2,7 @@ from pipeline.knowledge_ingestion_pipeline import KnowledgeIngestionPipeline
 from core.config import GITHUB_REPO, JIRA_PROJECT_KEY, GITHUB_TOKEN, JIRA_SERVER, JIRA_USERNAME, JIRA_API_TOKEN
 from github import Github
 from atlassian import Jira
+from pipeline.similarity_pipeline import SimilarityPipeline
 
 class Main:
     def __init__(self):
@@ -26,4 +27,10 @@ class Main:
 
 if __name__ == "__main__":
     main= Main()
-    main.run()
+    print("Enter \n 1. Run Knowledge Ingestion Pipeline \n 2. Run Similarity Search Pipeline")
+    choice = input("Enter your choice: ")
+    if choice == "1":
+        main.run()
+    elif choice == "2":
+        similarity_pipeline = SimilarityPipeline()
+        similarity_pipeline.runSimilarityPipeline()
