@@ -30,6 +30,7 @@ class GithubLoader:
                             "filename": file_content.name,
                             "repository":self.repo, 
                             "source":"github",
+                            "extension": file_content.path.split(".")[-1] if "." in file_content.path else "special_file"
 
                         }
                     }
