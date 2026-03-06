@@ -1,4 +1,7 @@
 from langchain_chroma import Chroma
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_ollama import OllamaEmbeddings
+from core.config import GOOGLE_API_KEY
 
 from retrieving.retrieve_chunks import RetrieveChunks
 from similarity.similar_chunks import SimilaritySearch
@@ -9,8 +12,21 @@ class SimilarityPipeline:
         pass
         
     def runSimilarityPipeline(self):
-        gemini_chroma_client = Chroma(collection_name="unified_docs_gemini", persist_directory="./app/vector_store/chroma_gemini")
-        ollama_chroma_client = Chroma(collection_name="unified_docs_ollama", persist_directory="./app/vector_store/chroma_ollama")
+        gemini_chroma_client = Chroma(
+            collection_name="unified_docs_gemini",
+            persist_directory="./app/vector_store/chroma_gemini",
+            embedding_function=GoogleGenerativeAIEmbeddings(
+                model="models/gemini-embedding-001",
+                google_api_key=GOOGLE_API_KEY
+            ),
+            collection_metadata={"hnsw:space": "cosine"}
+        )
+        ollama_chroma_client = Chroma(
+            collection_name="unified_docs_ollama",
+            persist_directory="./app/vector_store/chroma_ollama",
+            embedding_function=OllamaEmbeddings(model="nomic-embed-text"),
+            collection_metadata={"hnsw:space": "cosine"}
+        )
 
         gemini_retriever = RetrieveChunks(gemini_chroma_client)
         jira_chunks_gemini = gemini_retriever.retrieve_chunks("jira")
@@ -24,8 +40,8 @@ class SimilarityPipeline:
         similarity_search_ollama = SimilaritySearch(docs=jira_chunks_ollama, target_source="github", collection=ollama_chroma_client)
         similar_chunks_ollama = similarity_search_ollama.find_similar_chunks()
 
-        PrettyPrint.pretty_print(similar_chunks_ollama)
-        PrettyPrint.pretty_print(similar_chunks_gemini)
+        PrettyPrint.pretty_print(similar_chunks_ollama[:5])
+        PrettyPrint.pretty_print(similar_chunks_gemini[:5])
 
 
 
