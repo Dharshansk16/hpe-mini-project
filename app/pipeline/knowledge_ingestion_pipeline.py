@@ -1,4 +1,4 @@
-from app.core.config import GOOGLE_API_KEY
+from core.config import GOOGLE_API_KEY
 from loaders.github_loader import GithubLoader
 from loaders.jira_loader import JiraLoader
 from processing.chunking import GithubChunker, JiraChunker 
@@ -20,10 +20,13 @@ class KnowledgeIngestionPipeline:
         #chunk the documents seperately
         github_chunker = GithubChunker(chunk_size=1000, chunk_overlap=200)
         jira_chunker = JiraChunker(chunk_size=600, chunk_overlap=160)
-        chunked_github_docs = github_chunker.getChunks(github_docs)
-        chunked_jira_docs= jira_chunker.getChunks(jira_docs)
+        chunked_github_docs = github_chunker.get_chunks(github_docs)
+        chunked_jira_docs= jira_chunker.get_chunks(jira_docs)
+        
+        print(f"Fetched {len(github_docs)} documents from GitHub and chunked into {len(chunked_github_docs)} chunks.")
+        print(f"Fetched {len(jira_docs)} documents from Jira and chunked into {len(chunked_jira_docs)} chunks.")
 
-        #create embeddings for github chunks and jira chunks for gemini embedding model
+        # #create embeddings for github chunks and jira chunks for gemini embedding model
         gemini_embedding_model = GoogleGenerativeAIEmbeddings(
             model="models/gemini-embedding-001",
             goole_api_key = GOOGLE_API_KEY
@@ -31,33 +34,35 @@ class KnowledgeIngestionPipeline:
         
         github_embedder_gemini = EmbeddingsProcessor(
             collection_name="unified_docs_gemini",
-            embeddings_models=gemini_embedding_model,
-            persist_directory="./vector_store/chroma_gemini"
+            embeddings_model=gemini_embedding_model,
+            persist_directory="./app/vector_store/chroma_gemini"
             )
         jira_embedder_gemini = EmbeddingsProcessor(
             collection_name="unified_docs_gemini",
-            embeddings_models=gemini_embedding_model,
-            persist_directory="./vector_store/chroma_gemini"
+            embeddings_model=gemini_embedding_model,
+            persist_directory="./app/vector_store/chroma_gemini"
             )
+        
         github_embedder_gemini.create_embeddings(chunked_github_docs)
         jira_embedder_gemini.create_embeddings(chunked_jira_docs)
 
-        #create embeddings for github chunks and jira chunks for ollama embedding model
-        ollama_embedding_model = OllamaEmbeddings(model="qwen3-embedding")
+        print("Created embeddings for both GitHub and Jira documents using Gemini embedding model.")
 
+        #create embeddings for github chunks and jira chunks for ollama embedding model
+        ollama_embedding_model = OllamaEmbeddings(model="nomic-embed-text")
         github_embedder_ollama = EmbeddingsProcessor(
             collection_name="unified_docs_ollama", 
-            embeddings_models=ollama_embedding_model, 
-            persist_directory="./vector_store/chroma_ollama"
+            embeddings_model=ollama_embedding_model, 
+            persist_directory="./app/vector_store/chroma_ollama"
             )
         jira_embedder_ollama = EmbeddingsProcessor(
             collection_name="unified_docs_ollama", 
-            embeddings_models=ollama_embedding_model, 
-            persist_directory="./vector_store/chroma_ollama"
+            embeddings_model=ollama_embedding_model, 
+            persist_directory="./app/vector_store/chroma_ollama"
             )
         github_embedder_ollama.create_embeddings(chunked_github_docs)
         jira_embedder_ollama.create_embeddings(chunked_jira_docs)
-    
+        print("Created embeddings for both GitHub and Jira documents using Ollama embedding model.")
 
 
 

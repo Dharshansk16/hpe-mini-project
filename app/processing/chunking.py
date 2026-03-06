@@ -10,7 +10,7 @@ class BaseChunker(ABC):
     def get_splitter(self, doc):
         pass
 
-    def getChunks(self, documents):
+    def get_chunks(self, documents):
         chunked_docs= []
         for doc in documents:
             splitter = self.get_splitter(doc)
@@ -27,26 +27,33 @@ class BaseChunker(ABC):
 class GithubChunker(BaseChunker):
     EXTENSION_MAP = {
         "py": Language.PYTHON,
-        "js": Language.JAVASCRIPT,
+        "js": Language.JS,
+        "ts": Language.TS,
         "java": Language.JAVA,
         "md": Language.MARKDOWN,
-        "txt": Language.PLAIN_TEXT,
     }
 
     def get_splitter(self, doc):
         metadata = doc.get("metadata", {})
         extension = metadata.get("extension", "txt").lower()
-        language = self.EXTENSION_MAP.get(extension, Language.PLAIN_TEXT)
+        language = self.EXTENSION_MAP.get(extension)
+        if language:
+            return RecursiveCharacterTextSplitter.from_language(
+                language=language,
+                chunk_size= self.chunk_size,
+                chunk_overlap= self.chunk_overlap,
+            )
         return RecursiveCharacterTextSplitter(
-            language=language,
-            chunk_size= self.chunk_size,
-            chunk_overlap= self.chunk_overlap,
-        )
+                chunk_size=self.chunk_size,
+                chunk_overlap=self.chunk_overlap
+                )
+    
 class JiraChunker(BaseChunker):
     def get_splitter(self, doc):
-        return RecursiveCharacterTextSplitter(language=Language.PLAIN_TEXT,
-                                              chunk_size=self.chunk_size,
-                                              chunk_overlap=self.chunk_overlap)
+        return RecursiveCharacterTextSplitter(
+                chunk_size=self.chunk_size,
+                chunk_overlap=self.chunk_overlap
+                )
     
-            
+
             

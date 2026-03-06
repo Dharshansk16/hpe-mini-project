@@ -15,4 +15,6 @@ class EmbeddingsProcessor:
     def create_embeddings(self, documents):
         docs = [Document(page_content=doc["content"], metadata=doc.get("metadata", {})) for doc in documents]
         self.vector_store.add_documents(docs)
+        print(f"Created embeddings for {len(docs)} documents and stored in collection '{self.collection_name}' at '{self.persist_directory}'.")
+        
     
