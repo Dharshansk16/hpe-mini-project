@@ -39,6 +39,10 @@ class SimilarityPipeline:
 
         similarity_search_ollama = SimilaritySearch(docs=jira_chunks_ollama, target_source="github", collection=ollama_chroma_client)
         similar_chunks_ollama = similarity_search_ollama.find_similar_chunks()
+        
+        similar_chunks_gemini.sort(key=lambda x: x['similarity_score'], reverse=True)
+        similar_chunks_ollama.sort(key=lambda x: x['similarity_score'], reverse=True)
+
 
         PrettyPrint.pretty_print(similar_chunks_ollama[:5])
         PrettyPrint.pretty_print(similar_chunks_gemini[:5])

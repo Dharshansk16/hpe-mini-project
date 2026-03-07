@@ -10,13 +10,14 @@ class SimilaritySearch:
         res=[]
         for doc in self.docs:
             embedding= doc.get("embeddings")
+
             matches = self.collection.similarity_search_by_vector_with_relevance_scores(
                 embedding= embedding,
-                k=3,
+                k=6,
                 filter={"source": self.target_source}
             )
-            for matched_doc, dist in matches:
-                similarity_score = relevance_score_fn(dist)
+            for matched_doc, score in matches:
+                similarity_score = relevance_score_fn(score)
                 if similarity_score >= self.threshold:
                     res.append({
                         "source_content": doc["content"],
@@ -26,3 +27,4 @@ class SimilaritySearch:
                         "similarity_score": round(similarity_score, 4)
                     })
         return res
+    

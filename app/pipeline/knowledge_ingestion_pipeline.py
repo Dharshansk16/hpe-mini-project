@@ -49,7 +49,7 @@ class KnowledgeIngestionPipeline:
         print("Created embeddings for both GitHub and Jira documents using Gemini embedding model.")
 
         #create embeddings for github chunks and jira chunks for ollama embedding model
-        ollama_embedding_model = OllamaEmbeddings(model="nomic-embed-text")
+        ollama_embedding_model = OllamaEmbeddings(model="qwen3-embedding:4b")
         github_embedder_ollama = EmbeddingsProcessor(
             collection_name="unified_docs_ollama", 
             embeddings_model=ollama_embedding_model, 
