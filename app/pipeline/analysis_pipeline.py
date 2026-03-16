@@ -38,7 +38,6 @@ class AnalysisPipeline:
         PrettyPrint.pretty_print(top_matches)
 
         agent = AnalysisAgent(collection=gemini_chroma_client)
-        agentExecutor = agent._build_agent()
-        analyser = AnalyseMatches(top_matches, agentExecutor)
+        analyser = AnalyseMatches(top_matches, agent)
         analysis_results = analyser.analyse_matches()
         PrettyPrint.pretty_print_analysis(analysis_results)

@@ -3,7 +3,7 @@ from core.config import GOOGLE_API_KEY
 
 
 class GeminiLLM:
-    def __init__(self, model="gemini-2.0-flash"):
+    def __init__(self, model="gemini-3-flash-preview"):
         self.llm = ChatGoogleGenerativeAI(
             model=model,
             google_api_key=GOOGLE_API_KEY,

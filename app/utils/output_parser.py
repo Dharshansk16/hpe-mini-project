@@ -1,6 +1,7 @@
 import json
+
+
 class Parser:
-    @staticmethod
     def parse_output(self, output, jira_key, github_file, similarity_score):
         try:
             start = output.find("```json")

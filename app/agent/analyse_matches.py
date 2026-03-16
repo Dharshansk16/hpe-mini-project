@@ -1,12 +1,13 @@
-from utils.output_parser import OutputParser
+from utils.output_parser import Parser
+import time
 
-op = OutputParser()
+op = Parser()
 
 class AnalyseMatches:
 
-    def __init__(self, matches, agent_executor):
+    def __init__(self, matches, agent):
         self.matches = matches
-        self.agent_executor = agent_executor
+        self.agent = agent
 
     def analyse_matches(self):
         print(f"\nAnalysing {len(self.matches)} matches with agent...")
@@ -25,14 +26,14 @@ class AnalyseMatches:
                 f"Similarity Score: {match['similarity_score']}\n\n"
                 "Analyse the relationship between this Jira issue and the GitHub code."
             )
-            #call agent with input_text and get response
-            response = self.agent_executor.invoke({"input": input_text})
             try:
-                response = self.agent_executor.invoke({"input": input_text})
+                response = self.agent.run(input_text)
                 analysis = op.parse_output(
                     response.get("output", ""), jira_key, github_file, match['similarity_score']
                 )
                 results.append(analysis)
+                if i < len(self.matches):
+                    time.sleep(3)
             #if error
             except Exception as e:
                 results.append({
